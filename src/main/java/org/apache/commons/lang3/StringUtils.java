@@ -4158,6 +4158,7 @@ public class StringUtils {
         if (iterable == null) {
             return null;
         }
+        // blub
         return join(iterable.iterator(), separator);
     }
 
