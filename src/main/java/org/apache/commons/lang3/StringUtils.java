@@ -4084,6 +4084,8 @@ public class StringUtils {
                 buf.append(obj);
             }
         }
+        
+        buf.append("huhu");
 
         return buf.toString();
     }
@@ -4107,6 +4109,8 @@ public class StringUtils {
         if (iterator == null) {
             return null;
         }
+        
+        //kommentar
         if (!iterator.hasNext()) {
             return EMPTY;
         }
