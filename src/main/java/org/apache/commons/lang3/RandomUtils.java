@@ -22,8 +22,6 @@ import java.util.Random;
  * <p>Utility library that supplements the standard {@link Random} class.</p>
  * 
  * @since 3.3
- *
- * @version $Id$
  */
 public class RandomUtils {
 

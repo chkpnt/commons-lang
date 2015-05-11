@@ -37,13 +37,16 @@ import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
 import junit.framework.AssertionFailedError;
+
+import org.apache.commons.lang3.test.SystemDefaultsSwitch;
+import org.apache.commons.lang3.test.SystemDefaults;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.time.DateUtils}.
- *
  */
 public class DateUtilsTest {
 
@@ -56,6 +59,9 @@ public class DateUtilsTest {
         BASE_DATE = cal.getTime();
     }
 
+    @Rule
+    public SystemDefaultsSwitch defaults = new SystemDefaultsSwitch();
+    
     private DateFormat dateParser = null;
     private DateFormat dateTimeParser = null;
     private Date dateAmPm1 = null;
@@ -211,13 +217,13 @@ public class DateUtilsTest {
     public void testIsSameInstant_Cal() {
         final GregorianCalendar cala = new GregorianCalendar(TimeZone.getTimeZone("GMT+1"));
         final GregorianCalendar calb = new GregorianCalendar(TimeZone.getTimeZone("GMT-1"));
-        cala.set(2004, 6, 9, 13, 45, 0);
+        cala.set(2004, Calendar.JULY, 9, 13, 45, 0);
         cala.set(Calendar.MILLISECOND, 0);
-        calb.set(2004, 6, 9, 13, 45, 0);
+        calb.set(2004, Calendar.JULY, 9, 13, 45, 0);
         calb.set(Calendar.MILLISECOND, 0);
         assertFalse(DateUtils.isSameInstant(cala, calb));
         
-        calb.set(2004, 6, 9, 11, 45, 0);
+        calb.set(2004, Calendar.JULY, 9, 11, 45, 0);
         assertTrue(DateUtils.isSameInstant(cala, calb));
     }
 
@@ -231,21 +237,21 @@ public class DateUtilsTest {
     public void testIsSameLocalTime_Cal() {
         final GregorianCalendar cala = new GregorianCalendar(TimeZone.getTimeZone("GMT+1"));
         final GregorianCalendar calb = new GregorianCalendar(TimeZone.getTimeZone("GMT-1"));
-        cala.set(2004, 6, 9, 13, 45, 0);
+        cala.set(2004, Calendar.JULY, 9, 13, 45, 0);
         cala.set(Calendar.MILLISECOND, 0);
-        calb.set(2004, 6, 9, 13, 45, 0);
+        calb.set(2004, Calendar.JULY, 9, 13, 45, 0);
         calb.set(Calendar.MILLISECOND, 0);
         assertTrue(DateUtils.isSameLocalTime(cala, calb));
 
         final Calendar calc = Calendar.getInstance();
         final Calendar cald = Calendar.getInstance();
-        calc.set(2004, 6, 9, 4,  0, 0);
-        cald.set(2004, 6, 9, 16, 0, 0);
+        calc.set(2004, Calendar.JULY, 9, 4,  0, 0);
+        cald.set(2004, Calendar.JULY, 9, 16, 0, 0);
         calc.set(Calendar.MILLISECOND, 0);
         cald.set(Calendar.MILLISECOND, 0);
         assertFalse("LANG-677", DateUtils.isSameLocalTime(calc, cald));
         
-        calb.set(2004, 6, 9, 11, 45, 0);
+        calb.set(2004, Calendar.JULY, 9, 11, 45, 0);
         assertFalse(DateUtils.isSameLocalTime(cala, calb));
     }
 
@@ -871,19 +877,19 @@ public class DateUtilsTest {
         TimeZone.setDefault(defaultZone);
         dateTimeParser.setTimeZone(defaultZone);
         final Calendar testCalendar = Calendar.getInstance();
-        testCalendar.set(2007, 6, 2, 8, 8, 50);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 50);
         Date date = testCalendar.getTime();
         assertEquals("Minute Round Up Failed",
                      dateTimeParser.parse("July 2, 2007 08:09:00.000"),
                      DateUtils.round(date, Calendar.MINUTE));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 20);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 20);
         date = testCalendar.getTime();
         assertEquals("Minute No Round Failed",
                      dateTimeParser.parse("July 2, 2007 08:08:00.000"),
                      DateUtils.round(date, Calendar.MINUTE));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 50);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 50);
         testCalendar.set(Calendar.MILLISECOND, 600);
         date = testCalendar.getTime();
 
@@ -891,34 +897,34 @@ public class DateUtilsTest {
                      dateTimeParser.parse("July 2, 2007 08:08:51.000"),
                      DateUtils.round(date, Calendar.SECOND));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 50);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 50);
         testCalendar.set(Calendar.MILLISECOND, 200);
         date = testCalendar.getTime();
         assertEquals("Second Round Down with 200 Milli Seconds Failed",
                      dateTimeParser.parse("July 2, 2007 08:08:50.000"),
                      DateUtils.round(date, Calendar.SECOND));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 20);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 20);
         testCalendar.set(Calendar.MILLISECOND, 600);
         date = testCalendar.getTime();
         assertEquals("Second Round Up with 200 Milli Seconds Failed",
                      dateTimeParser.parse("July 2, 2007 08:08:21.000"),
                      DateUtils.round(date, Calendar.SECOND));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 20);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 20);
         testCalendar.set(Calendar.MILLISECOND, 200);
         date = testCalendar.getTime();
         assertEquals("Second Round Down with 200 Milli Seconds Failed",
                      dateTimeParser.parse("July 2, 2007 08:08:20.000"),
                      DateUtils.round(date, Calendar.SECOND));
 
-        testCalendar.set(2007, 6, 2, 8, 8, 50);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 8, 50);
         date = testCalendar.getTime();
         assertEquals("Hour Round Down Failed",
                      dateTimeParser.parse("July 2, 2007 08:00:00.000"),
                      DateUtils.round(date, Calendar.HOUR));
 
-        testCalendar.set(2007, 6, 2, 8, 31, 50);
+        testCalendar.set(2007, Calendar.JULY, 2, 8, 31, 50);
         date = testCalendar.getTime();
         assertEquals("Hour Round Up Failed",
                      dateTimeParser.parse("July 2, 2007 09:00:00.000"),
@@ -1559,64 +1565,39 @@ public class DateUtilsTest {
                 dateParser.parse("December 2, 2001"));
     }
 
+    @SystemDefaults(locale="en")
     @Test
     public void testLANG799_EN_OK() throws ParseException {
-        final Locale dflt = Locale.getDefault();
-        Locale.setDefault(Locale.ENGLISH);
-        try {
-            DateUtils.parseDate("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-            DateUtils.parseDateStrictly("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-        } finally {
-            Locale.setDefault(dflt);            
-        }
+        DateUtils.parseDate("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
+        DateUtils.parseDateStrictly("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
     }
 
     // Parse German date with English Locale
-    @Test(expected=ParseException.class)
+    @SystemDefaults(locale="en")
+    @Test(expected = ParseException.class)
     public void testLANG799_EN_FAIL() throws ParseException {
-        final Locale dflt = Locale.getDefault();
-        Locale.setDefault(Locale.ENGLISH);
-        try {
-            DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-        } finally {
-            Locale.setDefault(dflt);            
-        }
+        DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
     }
 
+    @SystemDefaults(locale="de")
     @Test
     public void testLANG799_DE_OK() throws ParseException {
-        final Locale dflt = Locale.getDefault();
-        Locale.setDefault(Locale.GERMAN);
-        try {
-            DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-            DateUtils.parseDateStrictly("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-        } finally {
-            Locale.setDefault(dflt);            
-        }
+        DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
+        DateUtils.parseDateStrictly("Mi, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
     }
 
     // Parse English date with German Locale
+    @SystemDefaults(locale="de")
     @Test(expected=ParseException.class)
     public void testLANG799_DE_FAIL() throws ParseException {
-        final Locale dflt = Locale.getDefault();
-        Locale.setDefault(Locale.GERMAN);
-        try {
-            DateUtils.parseDate("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
-        } finally {
-            Locale.setDefault(dflt);            
-        }
+        DateUtils.parseDate("Wed, 09 Apr 2008 23:55:38 GMT", "EEE, dd MMM yyyy HH:mm:ss zzz");
     }
     
     // Parse German date with English Locale, specifying German Locale override
+    @SystemDefaults(locale="en")
     @Test
     public void testLANG799_EN_WITH_DE_LOCALE() throws ParseException {
-        final Locale dflt = Locale.getDefault();
-        Locale.setDefault(Locale.ENGLISH);
-        try {
-            DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", Locale.GERMAN, "EEE, dd MMM yyyy HH:mm:ss zzz");
-        } finally {
-            Locale.setDefault(dflt);            
-        }
+        DateUtils.parseDate("Mi, 09 Apr 2008 23:55:38 GMT", Locale.GERMAN, "EEE, dd MMM yyyy HH:mm:ss zzz");
     }
     
     /**
@@ -1681,8 +1662,5 @@ public class DateUtilsTest {
         }
     }
 
-    void warn(final String msg) {
-        System.err.println(msg);
-    }
 }
 

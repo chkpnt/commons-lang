@@ -23,15 +23,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.test.SystemDefaultsSwitch;
+import org.apache.commons.lang3.test.SystemDefaults;
 import org.hamcrest.core.IsNot;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.StringUtils} - Substring methods
- *
- * @version $Id$
  */
 public class StringUtilsEqualsIndexOfTest  {
+
+    @Rule
+    public SystemDefaultsSwitch defaults = new SystemDefaultsSwitch();
+
     private static final String BAR = "bar";
     /**
      * Supplementary character U+20000
@@ -118,17 +123,18 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testContainsAny_StringCharArray() {
         assertFalse(StringUtils.containsAny(null, (char[]) null));
         assertFalse(StringUtils.containsAny(null, new char[0]));
-        assertFalse(StringUtils.containsAny(null, new char[] { 'a', 'b' }));
+        assertFalse(StringUtils.containsAny(null, 'a', 'b'));
 
         assertFalse(StringUtils.containsAny("", (char[]) null));
         assertFalse(StringUtils.containsAny("", new char[0]));
-        assertFalse(StringUtils.containsAny("", new char[] { 'a', 'b' }));
+        assertFalse(StringUtils.containsAny("", 'a', 'b'));
 
         assertFalse(StringUtils.containsAny("zzabyycdxx", (char[]) null));
         assertFalse(StringUtils.containsAny("zzabyycdxx", new char[0]));
-        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[] { 'z', 'a' }));
-        assertTrue(StringUtils.containsAny("zzabyycdxx", new char[] { 'b', 'y' }));
-        assertFalse(StringUtils.containsAny("ab", new char[] { 'z' }));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", 'z', 'a'));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", 'b', 'y'));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", 'z', 'y'));
+        assertFalse(StringUtils.containsAny("ab", 'z'));
     }
 
     /**
@@ -180,6 +186,7 @@ public class StringUtilsEqualsIndexOfTest  {
         assertFalse(StringUtils.containsAny("zzabyycdxx", ""));
         assertTrue(StringUtils.containsAny("zzabyycdxx", "za"));
         assertTrue(StringUtils.containsAny("zzabyycdxx", "by"));
+        assertTrue(StringUtils.containsAny("zzabyycdxx", "zy"));
         assertFalse(StringUtils.containsAny("ab", "z"));
     }
 
@@ -224,15 +231,16 @@ public class StringUtilsEqualsIndexOfTest  {
         assertFalse(StringUtils.containsAny("", new String[] { "hello" }));
         assertFalse(StringUtils.containsAny("hello, goodbye", (String[]) null));
         assertFalse(StringUtils.containsAny("hello, goodbye", new String[0]));
-        assertTrue(StringUtils.containsAny("hello, goodbye", new String[] { "hello", "goodbye" }));
-        assertTrue(StringUtils.containsAny("hello, goodbye", new String[] { "hello", "Goodbye" }));
-        assertFalse(StringUtils.containsAny("hello, goodbye", new String[] { "Hello", "Goodbye" }));
+        assertTrue(StringUtils.containsAny("hello, goodbye", new String[]{"hello", "goodbye"}));
+        assertTrue(StringUtils.containsAny("hello, goodbye", new String[]{"hello", "Goodbye"}));
+        assertFalse(StringUtils.containsAny("hello, goodbye", new String[]{"Hello", "Goodbye"}));
+        assertFalse(StringUtils.containsAny("hello, goodbye", new String[]{"Hello", null}));
+        assertFalse(StringUtils.containsAny("hello, null", new String[] { "Hello", null }));
     }
 
+    @SystemDefaults(locale="de_DE")
     @Test
     public void testContainsIgnoreCase_LocaleIndependence() {
-        final Locale orig = Locale.getDefault();
-
         final Locale[] locales = { Locale.ENGLISH, new Locale("tr"), Locale.getDefault() };
 
         final String[][] tdata = {
@@ -247,20 +255,16 @@ public class StringUtilsEqualsIndexOfTest  {
             { "\u00DF", "SS" },
         };
 
-        try {
-            for (final Locale locale : locales) {
-                Locale.setDefault(locale);
-                for (int j = 0; j < tdata.length; j++) {
-                    assertTrue(Locale.getDefault() + ": " + j + " " + tdata[j][0] + " " + tdata[j][1], StringUtils
-                            .containsIgnoreCase(tdata[j][0], tdata[j][1]));
-                }
-                for (int j = 0; j < fdata.length; j++) {
-                    assertFalse(Locale.getDefault() + ": " + j + " " + fdata[j][0] + " " + fdata[j][1], StringUtils
-                            .containsIgnoreCase(fdata[j][0], fdata[j][1]));
-                }
+        for (final Locale testLocale : locales) {
+            Locale.setDefault(testLocale);
+            for (int j = 0; j < tdata.length; j++) {
+                assertTrue(Locale.getDefault() + ": " + j + " " + tdata[j][0] + " " + tdata[j][1], StringUtils
+                        .containsIgnoreCase(tdata[j][0], tdata[j][1]));
             }
-        } finally {
-            Locale.setDefault(orig);
+            for (int j = 0; j < fdata.length; j++) {
+                assertFalse(Locale.getDefault() + ": " + j + " " + fdata[j][0] + " " + fdata[j][1], StringUtils
+                        .containsIgnoreCase(fdata[j][0], fdata[j][1]));
+            }
         }
     }
 
@@ -647,17 +651,17 @@ public class StringUtilsEqualsIndexOfTest  {
     public void testIndexOfAny_StringCharArray() {
         assertEquals(-1, StringUtils.indexOfAny(null, (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny(null, new char[0]));
-        assertEquals(-1, StringUtils.indexOfAny(null, new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAny(null, 'a','b'));
 
         assertEquals(-1, StringUtils.indexOfAny("", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny("", new char[0]));
-        assertEquals(-1, StringUtils.indexOfAny("", new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAny("", 'a','b'));
 
         assertEquals(-1, StringUtils.indexOfAny("zzabyycdxx", (char[]) null));
         assertEquals(-1, StringUtils.indexOfAny("zzabyycdxx", new char[0]));
-        assertEquals(0, StringUtils.indexOfAny("zzabyycdxx", new char[] {'z','a'}));
-        assertEquals(3, StringUtils.indexOfAny("zzabyycdxx", new char[] {'b','y'}));
-        assertEquals(-1, StringUtils.indexOfAny("ab", new char[] {'z'}));
+        assertEquals(0, StringUtils.indexOfAny("zzabyycdxx", 'z','a'));
+        assertEquals(3, StringUtils.indexOfAny("zzabyycdxx", 'b','y'));
+        assertEquals(-1, StringUtils.indexOfAny("ab", 'z'));
     }
 
     /**
@@ -720,19 +724,19 @@ public class StringUtilsEqualsIndexOfTest  {
     @Test
     public void testIndexOfAnyBut_StringCharArray() {
         assertEquals(-1, StringUtils.indexOfAnyBut(null, (char[]) null));
-        assertEquals(-1, StringUtils.indexOfAnyBut(null, new char[0]));
-        assertEquals(-1, StringUtils.indexOfAnyBut(null, new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut(null));
+        assertEquals(-1, StringUtils.indexOfAnyBut(null, 'a','b'));
 
         assertEquals(-1, StringUtils.indexOfAnyBut("", (char[]) null));
-        assertEquals(-1, StringUtils.indexOfAnyBut("", new char[0]));
-        assertEquals(-1, StringUtils.indexOfAnyBut("", new char[] {'a','b'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut(""));
+        assertEquals(-1, StringUtils.indexOfAnyBut("", 'a','b'));
 
         assertEquals(-1, StringUtils.indexOfAnyBut("zzabyycdxx", (char[]) null));
-        assertEquals(-1, StringUtils.indexOfAnyBut("zzabyycdxx", new char[0]));
-        assertEquals(3, StringUtils.indexOfAnyBut("zzabyycdxx", new char[] {'z','a'}));
-        assertEquals(0, StringUtils.indexOfAnyBut("zzabyycdxx", new char[] {'b','y'}));
-        assertEquals(-1, StringUtils.indexOfAnyBut("aba", new char[] {'a', 'b'}));
-        assertEquals(0, StringUtils.indexOfAnyBut("aba", new char[] {'z'}));
+        assertEquals(-1, StringUtils.indexOfAnyBut("zzabyycdxx"));
+        assertEquals(3, StringUtils.indexOfAnyBut("zzabyycdxx", 'z','a'));
+        assertEquals(0, StringUtils.indexOfAnyBut("zzabyycdxx", 'b','y'));
+        assertEquals(-1, StringUtils.indexOfAnyBut("aba", 'a', 'b'));
+        assertEquals(0, StringUtils.indexOfAnyBut("aba", 'z'));
 
     }
 

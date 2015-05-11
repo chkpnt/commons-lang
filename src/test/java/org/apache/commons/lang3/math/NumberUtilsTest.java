@@ -31,8 +31,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.math.NumberUtils}.
- *
- * @version $Id$
  */
 public class NumberUtilsTest {
 

@@ -74,6 +74,8 @@ import java.util.regex.Pattern;
  *      - checks the characters in a String</li>
  *  <li><b>DefaultString</b>
  *      - protects against a null input String</li>
+ *  <li><b>Rotate</b>
+ *      - rotate (circular shift) a String</li>
  *  <li><b>Reverse/ReverseDelimited</b>
  *      - reverses a String</li>
  *  <li><b>Abbreviate</b>
@@ -110,7 +112,6 @@ import java.util.regex.Pattern;
  * <p>#ThreadSafe#</p>
  * @see java.lang.String
  * @since 1.0
- * @version $Id$
  */
 //@Immutable
 public class StringUtils {
@@ -1595,6 +1596,7 @@ public class StringUtils {
      * StringUtils.containsAny(*, [])                  = false
      * StringUtils.containsAny("zzabyycdxx",['z','a']) = true
      * StringUtils.containsAny("zzabyycdxx",['b','y']) = true
+     * StringUtils.containsAny("zzabyycdxx",['z','y']) = true
      * StringUtils.containsAny("aba", ['z'])           = false
      * </pre>
      *
@@ -1652,6 +1654,7 @@ public class StringUtils {
      * StringUtils.containsAny(*, "")              = false
      * StringUtils.containsAny("zzabyycdxx", "za") = true
      * StringUtils.containsAny("zzabyycdxx", "by") = true
+     * StringUtils.containsAny("zzabyycdxx", "zy") = true
      * StringUtils.containsAny("aba","z")          = false
      * </pre>
      *
@@ -1683,7 +1686,8 @@ public class StringUtils {
      * StringUtils.containsAny("", *)              = false
      * StringUtils.containsAny(*, null)            = false
      * StringUtils.containsAny(*, [])              = false
-     * StringUtils.containsAny("abcd", "ab", "cd") = false
+     * StringUtils.containsAny("abcd", "ab", null) = false
+     * StringUtils.containsAny("abcd", "ab", "cd") = true
      * StringUtils.containsAny("abc", "d", "abc")  = true
      * </pre>
      *
@@ -4183,6 +4187,48 @@ public class StringUtils {
         return join(iterable.iterator(), separator);
     }
 
+    /**
+     * <p>Joins the elements of the provided varargs into a
+     * single String containing the provided elements.</p>
+     *
+     * <p>No delimiter is added before or after the list.
+     * {@code null} elements and separator are treated as empty Strings ("").</p>
+     *
+     * <pre>
+     * StringUtils.joinWith(",", {"a", "b"})        = "a,b"
+     * StringUtils.joinWith(",", {"a", "b",""})     = "a,b,"
+     * StringUtils.joinWith(",", {"a", null, "b"})  = "a,,b"
+     * StringUtils.joinWith(null, {"a", "b"})       = "ab"
+     * </pre>
+     *
+     * @param separator the separator character to use, null treated as ""
+     * @param objects the varargs providing the values to join together. {@code null} elements are treated as ""
+     * @return the joined String.
+     * @throws java.lang.IllegalArgumentException if a null varargs is provided
+     */
+    public static String joinWith(final String separator, final Object... objects) {
+        if (objects == null) {
+            throw new IllegalArgumentException("Object varargs must not be null");
+        }
+
+        final String sanitizedSeparator = defaultString(separator, StringUtils.EMPTY);
+
+        final StringBuilder result = new StringBuilder();
+
+        final Iterator<Object> iterator = Arrays.asList(objects).iterator();
+        while (iterator.hasNext()) {
+            @SuppressWarnings("deprecation") // o.k. to use as long as we do not require java 7 or greater
+            final String value = ObjectUtils.toString(iterator.next());
+            result.append(value);
+
+            if (iterator.hasNext()) {
+                result.append(sanitizedSeparator);
+            }
+        }
+
+        return result.toString();
+    }
+
     // Delete
     //-----------------------------------------------------------------------
     /**
@@ -5239,6 +5285,9 @@ public class StringUtils {
      * @see #repeat(String, int)
      */
     public static String repeat(final char ch, final int repeat) {
+        if (repeat <= 0) {
+            return EMPTY;
+        }
         final char[] buf = new char[repeat];
         for (int i = repeat - 1; i >= 0; i--) {
             buf[i] = ch;
@@ -5722,19 +5771,20 @@ public class StringUtils {
         }
 
         final char firstChar = str.charAt(0);
-        if (Character.isTitleCase(firstChar)) {
+        final char newChar = Character.toUpperCase(firstChar);
+        if (firstChar == newChar) {
             // already capitalized
             return str;
         }
 
-        return new StringBuilder(strLen)
-            .append(Character.toTitleCase(firstChar))
-            .append(str.substring(1))
-            .toString();
+        char[] newChars = new char[strLen];
+        newChars[0] = newChar;
+        str.getChars(1,strLen, newChars, 1);
+        return String.valueOf(newChars);
     }
 
     /**
-     * <p>Uncapitalizes a String changing the first letter to title case as
+     * <p>Uncapitalizes a String, changing the first letter to lower case as
      * per {@link Character#toLowerCase(char)}. No other letters are changed.</p>
      *
      * <p>For a word based algorithm, see {@link org.apache.commons.lang3.text.WordUtils#uncapitalize(String)}.
@@ -5743,6 +5793,7 @@ public class StringUtils {
      * <pre>
      * StringUtils.uncapitalize(null)  = null
      * StringUtils.uncapitalize("")    = ""
+     * StringUtils.uncapitalize("cat") = "cat"
      * StringUtils.uncapitalize("Cat") = "cat"
      * StringUtils.uncapitalize("CAT") = "cAT"
      * </pre>
@@ -5760,15 +5811,16 @@ public class StringUtils {
         }
 
         final char firstChar = str.charAt(0);
-        if (Character.isLowerCase(firstChar)) {
+        final char newChar = Character.toLowerCase(firstChar);
+        if (firstChar == newChar) {
             // already uncapitalized
             return str;
         }
 
-        return new StringBuilder(strLen)
-            .append(Character.toLowerCase(firstChar))
-            .append(str.substring(1))
-            .toString();
+        char[] newChars = new char[strLen];
+        newChars[0] = newChar;
+        str.getChars(1,strLen, newChars, 1);
+        return String.valueOf(newChars);
     }
 
     /**
@@ -6336,6 +6388,50 @@ public class StringUtils {
      */
     public static <T extends CharSequence> T defaultIfEmpty(final T str, final T defaultStr) {
         return isEmpty(str) ? defaultStr : str;
+    }
+
+    // Rotating (circular shift)
+    //-----------------------------------------------------------------------
+    /**
+     * <p>Rotate (circular shift) a String of {@code shift} characters.</p>
+     * <ul>
+     *  <li>If {@code shift > 0}, right circular shift (ex : ABCDEF =&gt; FABCDE)</li>
+     *  <li>If {@code shift < 0}, left circular shift (ex : ABCDEF =&gt; BCDEFA)</li>
+     * </ul>
+     *
+     * <pre>
+     * StringUtils.rotate(null, *)        = null
+     * StringUtils.rotate("", *)          = ""
+     * StringUtils.rotate("abcdefg", 0)   = "abcdefg"
+     * StringUtils.rotate("abcdefg", 2)   = "fgabcde"
+     * StringUtils.rotate("abcdefg", -2)  = "cdefgab"
+     * StringUtils.rotate("abcdefg", 7)   = "abcdefg"
+     * StringUtils.rotate("abcdefg", -7)  = "abcdefg"
+     * StringUtils.rotate("abcdefg", 9)   = "fgabcde"
+     * StringUtils.rotate("abcdefg", -9)  = "cdefgab"
+     * </pre>
+     *
+     * @param str  the String to rotate, may be null
+     * @param shift  number of time to shift (positive : right shift, negative : left shift)
+     * @return the rotated String,
+     *          or the original String if {@code shift == 0},
+     *          or {@code null} if null String input
+     */
+    public static String rotate(String str, int shift) {
+        if (str == null) {
+            return null;
+        }
+
+        final int strLen = str.length();
+        if (shift == 0 || strLen == 0 || shift % strLen == 0) {
+            return str;
+        }
+
+        final StringBuilder builder = new StringBuilder(strLen);
+        final int offset = - (shift % strLen);
+        builder.append(substring(str, offset));
+        builder.append(substring(str, 0, offset));
+        return builder.toString();
     }
 
     // Reversing

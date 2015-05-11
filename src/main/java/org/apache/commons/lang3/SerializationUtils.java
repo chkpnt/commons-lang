@@ -43,7 +43,6 @@ import java.util.Map;
  *
  * <p>#ThreadSafe#</p>
  * @since 1.0
- * @version $Id$
  */
 public class SerializationUtils {
 
@@ -121,7 +120,7 @@ public class SerializationUtils {
      * @return the serialized and deseralized object
      * @since 3.3
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") // OK, because we serialized a type `T`
     public static <T extends Serializable> T roundtrip(final T msg) {
         return (T) SerializationUtils.deserialize(SerializationUtils.serialize(msg));
     }

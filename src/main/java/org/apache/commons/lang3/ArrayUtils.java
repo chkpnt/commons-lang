@@ -41,7 +41,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
  *
  * <p>#ThreadSafe#</p>
  * @since 2.0
- * @version $Id$
  */
 public class ArrayUtils {
 
@@ -458,6 +457,30 @@ public class ArrayUtils {
 
     // nullToEmpty
     //-----------------------------------------------------------------------
+    /**
+     * <p>Defensive programming technique to change a {@code null}
+     * reference to an empty one.</p>
+     *
+     * <p>This method returns an empty array for a {@code null} input array.</p>
+     *
+     * @param array  the array to check for {@code null} or empty
+     * @param type   the class representation of the desired array
+     * @return the same array, {@code public static} empty array if {@code null}
+     * @throws IllegalArgumentException if the type argument is null
+     * @since 3.5
+     */
+    public static <T> T[] nullToEmpty(final T[] array, final Class<T[]> type) {
+        if(type == null) {
+            throw new IllegalArgumentException("The type must not be null");
+        }
+
+        if(array == null) {
+            return type.cast(Array.newInstance(type.getComponentType(), 0));
+        }
+        return array;
+    }    
+    
+    
     /**
      * <p>Defensive programming technique to change a {@code null}
      * reference to an empty one.</p>
@@ -1820,6 +1843,1307 @@ public class ArrayUtils {
             array[i] = tmp;
             j--;
             i++;
+        }
+    }
+
+    // Swap
+    //-----------------------------------------------------------------------
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>There is no special handling for multi-dimensional arrays.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap(["1", "2", "3"], 0, 2) -> ["3", "2", "1"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3"], 0, 0) -> ["1", "2", "3"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3"], 1, 0) -> ["2", "1", "3"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3"], 0, 5) -> ["1", "2", "3"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3"], -1, 1) -> ["2", "1", "3"]</li>
+     *     </ul>
+     * </p>
+     *
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final Object[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>There is no special handling for multi-dimensional arrays.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([true, false, true], 0, 2) -> [true, false, true]</li>
+     *         <li>ArrayUtils.swap([true, false, true], 0, 0) -> [true, false, true]</li>
+     *         <li>ArrayUtils.swap([true, false, true], 1, 0) -> [false, true, true]</li>
+     *         <li>ArrayUtils.swap([true, false, true], 0, 5) -> [true, false, true]</li>
+     *         <li>ArrayUtils.swap([true, false, true], -1, 1) -> [false, true, true]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final long[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     *
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final int[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final short[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     *
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final char[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final byte[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final double[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final float[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps two elements in the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero).</p>
+     *
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 2) -> [3, 2, 1]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 0) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 1, 0) -> [2, 1, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], 0, 5) -> [1, 2, 3]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3], -1, 1) -> [2, 1, 3]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array  the array to swap, may be {@code null}
+     * @param offset1 the index of the first element to swap
+     * @param offset2 the index of the second element to swap
+     */
+    public static void swap(final boolean[] array, int offset1, int offset2) {
+        if (array == null || array.length == 0) {
+            return;
+        }
+        swap(array, offset1, offset2, 1);
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([true, false, true, false], 0, 2, 1) -> [true, false, true, false]</li>
+     *         <li>ArrayUtils.swap([true, false, true, false], 0, 0, 1) -> [true, false, true, false]</li>
+     *         <li>ArrayUtils.swap([true, false, true, false], 0, 2, 2) -> [true, false, true, false]</li>
+     *         <li>ArrayUtils.swap([true, false, true, false], -3, 2, 2) -> [true, false, true, false]</li>
+     *         <li>ArrayUtils.swap([true, false, true, false], 0, 3, 3) -> [false, false, true, true]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final boolean[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            boolean aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+
+    public static void swap(final byte[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            byte aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final char[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            char aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final double[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            double aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final float[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            float aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final int[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            int aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+    public static void swap(final long[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            long aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    /**
+     * <p>Swaps a series of elements in the given array.</p>
+     * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap(["1", "2", "3", "4"], 0, 2, 1) -> ["3", "2", "1", "4"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3", "4"], 0, 0, 1) -> ["1", "2", "3", "4"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3", "4"], 2, 0, 2) -> ["3", "4", "1", "2"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3", "4"], -3, 2, 2) -> ["3", "4", "1", "2"]</li>
+     *         <li>ArrayUtils.swap(["1", "2", "3", "4"], 0, 3, 3) -> ["4", "2", "3", "1"]</li>
+     *     </ul>
+     * </p>
+     * 
+     * @param array the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len the number of elements to swap starting with the given indices
+     */
+   public static void swap(final Object[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            Object aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+   /**
+    * <p>Swaps a series of elements in the given array.</p>
+    * 
+     * <p>This method does nothing for a {@code null} or empty input array or for overflow indices.
+     * Negative indices are promoted to 0(zero). 
+     * If any of the sub-arrays to swap falls outside of the given array, 
+     * then the swap is stopped at the end of the array and as many as possible elements are swapped.
+     * </p>
+     * 
+     * <p>Examples:
+     *     <ul>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -> [3, 2, 1, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -> [1, 2, 3, 4]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -> [3, 4, 1, 2]</li>
+     *         <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -> [4, 2, 3, 1]</li>
+     *     </ul>
+     * </p>
+    * 
+    * @param array the array to swap, may be {@code null}
+    * @param offset1 the index of the first element in the series to swap
+    * @param offset2 the index of the second element in the series to swap
+    * @param len the number of elements to swap starting with the given indices
+    */
+    public static void swap(final short[] array,  int offset1, int offset2, int len) {
+        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+            return;
+        }
+        if (offset1 < 0) {
+            offset1 = 0;
+        }
+        if (offset2 < 0) {
+            offset2 = 0;
+        }
+        if (offset1 == offset2) {
+            return;
+        }
+        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
+        for (int i = 0; i < len; i++, offset1++, offset2++) {
+            short aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
+    }
+
+    // Shift
+    //-----------------------------------------------------------------------
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>There is no special handling for multi-dimensional arrays.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     * @param offset how many position to the right to shift the array, if negative it will be shiftd to the left.
+     */
+    public static void shift(final Object[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final long[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final int[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final short[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final char[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final byte[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final double[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final float[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>Shifts the order of the given array.</p>
+     *
+     * <p>This method does nothing for a {@code null} input array.</p>
+     *
+     * @param array  the array to shift, may be {@code null}
+     */
+    public static void shift(final boolean[] array, int offset) {
+        if (array == null) {
+            return;
+        }
+        shift(array, 0, array.length, offset);
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final boolean[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final byte[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final char[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final double[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final float[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final int[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     */
+    public static void shift(final long[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     */
+    public static void shift(final Object[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Shifts the order of the given array in the given range.
+     * </p>
+     * 
+     * <p>
+     * This method does nothing for a {@code null} input array.
+     * </p>
+     * 
+     * @param array
+     *            the array to shift, may be {@code null}
+     * @param startIndexInclusive
+     *            the starting index. Undervalue (&lt;0) is promoted to 0, overvalue (&gt;array.length) results in no
+     *            change.
+     * @param endIndexExclusive
+     *            elements up to endIndex-1 are shiftd in the array. Undervalue (&lt; start index) results in no
+     *            change. Overvalue (&gt;array.length) is demoted to array length.
+     * @since 3.2
+     */
+    public static void shift(final short[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
+        if (array == null) {
+            return;
+        }
+        if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
+            return;
+        }
+        if (startIndexInclusive < 0) {
+            startIndexInclusive = 0;
+        } 
+        if (endIndexExclusive >= array.length) {
+            endIndexExclusive = array.length;
+        }        
+        int n = endIndexExclusive - startIndexInclusive;
+        if (n <= 1) {
+            return;
+        }
+        offset %= n;
+        if (offset < 0) {
+            offset += n;
+        }
+        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
+        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        while (n > 1 && offset > 0) {
+            int n_offset = n - offset;
+            
+            if (offset > n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n - n_offset,  n_offset);
+                n = offset;
+                offset -= n_offset;
+            } else if (offset < n_offset) {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset,  offset);
+                startIndexInclusive += offset;
+                n = n_offset;
+            } else {
+                swap(array, startIndexInclusive, startIndexInclusive + n_offset, offset);
+                break;
+            }
         }
     }
 

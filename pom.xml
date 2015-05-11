@@ -45,9 +45,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/proper/lang/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/proper/lang/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/commons/proper/lang/trunk</url>
+    <connection>scm:git:http://git-wip-us.apache.org/repos/asf/commons-lang.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/commons-lang.git</developerConnection>
+    <url>https://git-wip-us.apache.org/repos/asf?p=commons-lang.git</url>
   </scm>
 
   <developers>
@@ -478,6 +478,12 @@
     <contributor>
       <name>Michał Kordas</name>
     </contributor>
+    <contributor>
+      <name>Felipe Adorno</name>
+    </contributor>
+    <contributor>
+      <name>Adrian Ber</name>
+    </contributor>
   </contributors>
 
   <!-- Lang should depend on very little -->
@@ -632,27 +638,11 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>clirr-maven-plugin</artifactId>
-        <version>2.6.1</version>
-        <configuration>
-          <minSeverity>info</minSeverity>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.4</version>
         <configuration>
           <targetJdk>${maven.compiler.target}</targetJdk>
         </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>pmd</report>
-              <report>cpd</report>
-            </reports>
-          </reportSet>
-        </reportSets>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

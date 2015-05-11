@@ -61,9 +61,8 @@ import org.apache.commons.lang3.SystemUtils;
  * </p>
  * 
  * @since 3.4
- * @version $Id$
  */
-class MultilineRecursiveToStringStyle extends RecursiveToStringStyle {
+public class MultilineRecursiveToStringStyle extends RecursiveToStringStyle {
 
     /**
      * Required for serialization support.

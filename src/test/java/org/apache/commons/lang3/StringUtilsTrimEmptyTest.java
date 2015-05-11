@@ -26,8 +26,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.StringUtils} - Trim/Empty methods
- *
- * @version $Id$
  */
 public class StringUtilsTrimEmptyTest  {
     private static final String FOO = "foo";

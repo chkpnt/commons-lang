@@ -26,8 +26,6 @@ import org.junit.Test;
 
 /**
  * TestCase for StopWatch.
- *
- * @version $Id$
  */
 public class StopWatchTest  {
 

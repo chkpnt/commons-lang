@@ -33,8 +33,6 @@ import static org.junit.Assume.assumeNotNull;
 
 /**
  * Unit tests FieldUtils
- * 
- * @version $Id$
  */
 public class FieldUtilsTest {
 

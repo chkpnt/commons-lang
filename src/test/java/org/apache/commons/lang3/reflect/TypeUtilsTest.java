@@ -42,7 +42,6 @@ import org.junit.Test;
 
 /**
  * Test TypeUtils
- * @version $Id$
  */
 @SuppressWarnings({ "unchecked", "unused" , "rawtypes" })
 //raw types, where used, are used purposely
@@ -96,6 +95,8 @@ public class TypeUtilsTest<B> {
     public static Comparable<Integer> intComparable;
 
     public static Comparable<Long> longComparable;
+
+    public static Comparable<?> wildcardComparable;
 
     public static URI uri;
 
@@ -720,6 +721,15 @@ public class TypeUtilsTest<B> {
        final WildcardType lowerTypeVariable = TypeUtils.wildcardType().withLowerBounds(iterableT0).build();
        Assert.assertEquals(String.format("? super %s", iterableT0.getName()), TypeUtils.toString(lowerTypeVariable));
        Assert.assertEquals(String.format("? super %s", iterableT0.getName()), lowerTypeVariable.toString());
+    }
+
+    @Test
+    public void testLang1114() throws Exception {
+        final Type nonWildcardType = getClass().getDeclaredField("wildcardComparable").getGenericType();
+        final Type wildcardType = ((ParameterizedType)nonWildcardType).getActualTypeArguments()[0];
+
+        Assert.assertFalse(TypeUtils.equals(wildcardType, nonWildcardType));
+        Assert.assertFalse(TypeUtils.equals(nonWildcardType, wildcardType));
     }
 
     @Test

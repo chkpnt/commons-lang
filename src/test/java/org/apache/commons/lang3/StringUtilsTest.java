@@ -41,8 +41,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.StringUtils}.
- *
- * @version $Id$
  */
 @SuppressWarnings("deprecation") // deliberate use of deprecated code
 public class StringUtilsTest {
@@ -267,6 +265,11 @@ public class StringUtilsTest {
                      "foo test thing", StringUtils.lowerCase("fOo test THING", Locale.ENGLISH) );
         assertEquals("lowerCase(empty-string, Locale) failed",
                      "", StringUtils.lowerCase("", Locale.ENGLISH) );
+        
+        // Examples from uncapitalize Javadoc
+        assertEquals("cat", StringUtils.uncapitalize("cat"));
+        assertEquals("cat", StringUtils.uncapitalize("Cat")); 
+        assertEquals("cAT", StringUtils.uncapitalize("CAT"));         
     }
 
     @Test
@@ -454,6 +457,24 @@ public class StringUtilsTest {
 
         assertEquals(TEXT_LIST, StringUtils.join(Arrays.asList(ARRAY_LIST), SEPARATOR));
     }
+
+    @Test
+    public void testJoinWith() {
+        assertEquals("", StringUtils.joinWith(",", new Object[0]));        // empty array
+        assertEquals("", StringUtils.joinWith(",", (Object[]) NULL_ARRAY_LIST));
+        assertEquals("null", StringUtils.joinWith(",", NULL_TO_STRING_LIST));   //toString method prints 'null'
+
+        assertEquals("a,b,c", StringUtils.joinWith(",", new Object[]{"a", "b", "c"}));
+        assertEquals(",a,", StringUtils.joinWith(",", new Object[]{null, "a", ""}));
+
+        assertEquals("ab", StringUtils.joinWith(null, "a", "b"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testJoinWithThrowsException() {
+        StringUtils.joinWith(",", (Object[]) null);
+    }
+
 
     @Test
     public void testSplit_String() {
@@ -1348,6 +1369,7 @@ public class StringUtilsTest {
         assertEquals("", StringUtils.repeat("ab", 0));
         assertEquals("", StringUtils.repeat("", 3));
         assertEquals("aaa", StringUtils.repeat("a", 3));
+        assertEquals("", StringUtils.repeat("a", -2));
         assertEquals("ababab", StringUtils.repeat("ab", 3));
         assertEquals("abcabcabc", StringUtils.repeat("abc", 3));
         final String str = StringUtils.repeat("a", 10000);  // bigger than pad limit
@@ -1367,6 +1389,13 @@ public class StringUtilsTest {
         assertEquals("xx", StringUtils.repeat("", "x", 3));
 
         assertEquals("?, ?, ?", StringUtils.repeat("?", ", ", 3));
+    }
+
+    @Test
+    public void testRepeat_CharInt() {
+        assertEquals("zzz", StringUtils.repeat('z', 3));
+        assertEquals("", StringUtils.repeat('z', 0));
+        assertEquals("", StringUtils.repeat('z', -2));
     }
 
     @Test
@@ -1610,6 +1639,22 @@ public class StringUtilsTest {
         assertEquals("yzyayzy", StringUtils.center("a", 7, "yz"));
         assertEquals("  abc  ", StringUtils.center("abc", 7, null));
         assertEquals("  abc  ", StringUtils.center("abc", 7, ""));
+    }
+
+    //-----------------------------------------------------------------------
+    @Test
+    public void testRotate_StringInt() {
+        assertEquals(null, StringUtils.rotate(null, 1));
+        assertEquals("", StringUtils.rotate("", 1));
+        assertEquals("abcdefg", StringUtils.rotate("abcdefg", 0));
+        assertEquals("fgabcde", StringUtils.rotate("abcdefg", 2));
+        assertEquals("cdefgab", StringUtils.rotate("abcdefg", -2));
+        assertEquals("abcdefg", StringUtils.rotate("abcdefg", 7));
+        assertEquals("abcdefg", StringUtils.rotate("abcdefg", -7));
+        assertEquals("fgabcde", StringUtils.rotate("abcdefg", 9));
+        assertEquals("cdefgab", StringUtils.rotate("abcdefg", -9));
+        assertEquals("efgabcd", StringUtils.rotate("abcdefg", 17));
+        assertEquals("defgabc", StringUtils.rotate("abcdefg", -17));
     }
 
     //-----------------------------------------------------------------------

@@ -26,8 +26,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link DiffResult}.
- *
- * @version $Id$
  */
 public class DiffResultTest {
 

@@ -39,8 +39,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.Validate}.
- *
- * @version $Id$
  */
 public class ValidateTest  {
     

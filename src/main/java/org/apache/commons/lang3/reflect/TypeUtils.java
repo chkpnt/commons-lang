@@ -42,7 +42,6 @@ import org.apache.commons.lang3.builder.Builder;
  * generics. </p>
  *
  * @since 3.0
- * @version $Id$
  */
 public class TypeUtils {
 
@@ -157,7 +156,7 @@ public class TypeUtils {
         private ParameterizedTypeImpl(final Class<?> raw, final Type useOwner, final Type[] typeArguments) {
             this.raw = raw;
             this.useOwner = useOwner;
-            this.typeArguments = typeArguments;
+            this.typeArguments = typeArguments.clone();
         }
 
         /**
@@ -1500,7 +1499,7 @@ public class TypeUtils {
         }
         Validate.noNullElements(typeArguments, "null type argument at index %s");
         Validate.isTrue(raw.getTypeParameters().length == typeArguments.length,
-            "invalid number of type parameters specified: expected %s, got %s", raw.getTypeParameters().length,
+            "invalid number of type parameters specified: expected %d, got %d", raw.getTypeParameters().length,
             typeArguments.length);
 
         return new ParameterizedTypeImpl(raw, useOwner, typeArguments);
@@ -1626,7 +1625,7 @@ public class TypeUtils {
             return equals(getImplicitLowerBounds(w), getImplicitLowerBounds(other))
                 && equals(getImplicitUpperBounds(w), getImplicitUpperBounds(other));
         }
-        return true;
+        return false;
     }
 
     /**

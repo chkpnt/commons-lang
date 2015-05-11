@@ -19,12 +19,11 @@ package org.apache.commons.lang3.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
 import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.builder.HashCodeBuilder}.
- * 
- * @version $Id$
  */
 public class HashCodeBuilderTest {
 
@@ -32,6 +31,8 @@ public class HashCodeBuilderTest {
      * A reflection test fixture.
      */
     static class ReflectionTestCycleA {
+        int index = 10;
+        String name = "ReflectionTestCycleA";
         ReflectionTestCycleB b;
 
         @Override
@@ -44,11 +45,49 @@ public class HashCodeBuilderTest {
      * A reflection test fixture.
      */
     static class ReflectionTestCycleB {
+        int index = 11;
+        String name = "ReflectionTestCycleB";
         ReflectionTestCycleA a;
 
         @Override
         public int hashCode() {
             return HashCodeBuilder.reflectionHashCode(this);
+        }
+    }
+
+    /**
+     * A nonreflection test fixture.
+     */
+    static class NonreflectionTestCycleA {
+        int index = 20;
+        String name = "NonreflectionTestCycleA";
+        NonreflectionTestCycleB b;
+
+        @Override
+        public int hashCode() {
+            HashCodeBuilder builder = new HashCodeBuilder();
+            builder.append(index);
+            builder.append(name);
+            builder.append(b);
+            return builder.toHashCode();
+        }
+    }
+
+    /**
+     * A nonreflection test fixture.
+     */
+    static class NonreflectionTestCycleB {
+        int index = 21;
+        String name = "NonreflectionTestCycleB";
+        NonreflectionTestCycleA a;
+
+        @Override
+        public int hashCode() {
+            HashCodeBuilder builder = new HashCodeBuilder();
+            builder.append(index);
+            builder.append(name);
+            builder.append(a);
+            return builder.toHashCode();
         }
     }
 
@@ -523,7 +562,7 @@ public class HashCodeBuilderTest {
     }
 
     /**
-     * Test Objects pointing to each other.
+     * Test Objects pointing to each other when {@link HashCodeBuilder#reflectionHashCode(Object, String...)} used.
      */
     @Test
     public void testReflectionObjectCycle() {
@@ -556,6 +595,22 @@ public class HashCodeBuilderTest {
     }
 
     /**
+     * Test Objects pointing to each other when <code>append()</code> methods are used on <code>HashCodeBuilder</code> instance.
+     */
+    @Test
+    public void testNonreflectionObjectCycle() {
+        final NonreflectionTestCycleA a = new NonreflectionTestCycleA();
+        final NonreflectionTestCycleB b = new NonreflectionTestCycleB();
+        a.b = b;
+        b.a = a;
+
+        a.hashCode();
+        assertNull(HashCodeBuilder.getRegistry());
+        b.hashCode();
+        assertNull(HashCodeBuilder.getRegistry());
+    }
+
+    /**
      * Ensures LANG-520 remains true
      */
     @Test
@@ -563,6 +618,53 @@ public class HashCodeBuilderTest {
         final HashCodeBuilder hcb = new HashCodeBuilder(17, 37).append(new Object()).append('a');
         assertEquals("hashCode() is no longer returning the same value as toHashCode() - see LANG-520", 
                      hcb.toHashCode(), hcb.hashCode());
+    }
+
+    static class TestObjectHashCodeExclude {
+        @HashCodeExclude
+        private int a;
+        private int b;
+
+        public TestObjectHashCodeExclude(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        public int getA() {
+            return a;
+        }
+
+        public int getB() {
+            return b;
+        }
+    }
+
+    static class TestObjectHashCodeExclude2 {
+        @HashCodeExclude
+        private int a;
+        @HashCodeExclude
+        private int b;
+
+        public TestObjectHashCodeExclude2(int a, int b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        public int getA() {
+            return a;
+        }
+
+        public int getB() {
+            return b;
+        }
+    }
+
+    @Test
+    public void testToHashCodeExclude() {
+        TestObjectHashCodeExclude one = new TestObjectHashCodeExclude(1, 2);
+        TestObjectHashCodeExclude2 two = new TestObjectHashCodeExclude2(1, 2);
+        assertEquals(17 * 37 + 2, HashCodeBuilder.reflectionHashCode(one));
+        assertEquals(17, HashCodeBuilder.reflectionHashCode(two));
     }
 
 }

@@ -26,8 +26,6 @@ import org.junit.Test;
 
 /**
  * Test class for {@code ConstantInitializer}.
- *
- * @version $Id$
  */
 public class ConstantInitializerTest {
     /** Constant for the object managed by the initializer. */

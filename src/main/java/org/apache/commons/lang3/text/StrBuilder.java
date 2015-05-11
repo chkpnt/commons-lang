@@ -72,7 +72,6 @@ import org.apache.commons.lang3.builder.Builder;
  * the interface. 
  *
  * @since 2.2
- * @version $Id$
  */
 public class StrBuilder implements CharSequence, Appendable, Serializable, Builder<String> {
 
@@ -2819,6 +2818,9 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
         if (this == other) {
             return true;
         }
+        if (other == null) {
+            return false;
+        }
         if (this.size != other.size) {
             return false;
         }
@@ -2841,10 +2843,7 @@ public class StrBuilder implements CharSequence, Appendable, Serializable, Build
      */
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof StrBuilder) {
-            return equals((StrBuilder) obj);
-        }
-        return false;
+        return obj instanceof StrBuilder && equals((StrBuilder) obj);
     }
 
     /**

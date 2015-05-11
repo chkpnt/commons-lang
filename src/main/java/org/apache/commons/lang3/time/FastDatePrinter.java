@@ -73,7 +73,6 @@ import java.util.concurrent.ConcurrentMap;
  * 'YYY' will be formatted as '2003', while it was '03' in former Java
  * versions. FastDatePrinter implements the behavior of Java 7.</p>
  *
- * @version $Id$
  * @since 3.2
  * @see FastDateParser
  */
@@ -283,7 +282,7 @@ public class FastDatePrinter implements DatePrinter, Serializable {
                 if (tokenLen == 1) {
                     rule = TimeZoneNumberRule.INSTANCE_NO_COLON;
                 } else if (tokenLen == 2) {
-                    rule = TimeZoneNumberRule.INSTANCE_ISO_8601;
+                    rule = Iso8601_Rule.ISO8601_HOURS_COLON_MINUTES;
                 } else {
                     rule = TimeZoneNumberRule.INSTANCE_COLON;
                 }
@@ -477,7 +476,8 @@ public class FastDatePrinter implements DatePrinter, Serializable {
      */
     @Override
     public StringBuffer format(final Calendar calendar, final StringBuffer buf) {
-        return applyRules(calendar, buf);
+        // do not pass in calendar directly, this will cause TimeZone of FastDatePrinter to be ignored
+        return format(calendar.getTime(), buf);
     }
 
     /**
@@ -1178,22 +1178,18 @@ public class FastDatePrinter implements DatePrinter, Serializable {
      * or {@code +/-HH:MM}.</p>
      */
     private static class TimeZoneNumberRule implements Rule {
-        static final TimeZoneNumberRule INSTANCE_COLON = new TimeZoneNumberRule(true, false);
-        static final TimeZoneNumberRule INSTANCE_NO_COLON = new TimeZoneNumberRule(false, false);
-        static final TimeZoneNumberRule INSTANCE_ISO_8601 = new TimeZoneNumberRule(true, true);
+        static final TimeZoneNumberRule INSTANCE_COLON = new TimeZoneNumberRule(true);
+        static final TimeZoneNumberRule INSTANCE_NO_COLON = new TimeZoneNumberRule(false);
         
         final boolean mColon;
-        final boolean mISO8601;
 
         /**
          * Constructs an instance of {@code TimeZoneNumberRule} with the specified properties.
          *
          * @param colon add colon between HH and MM in the output if {@code true}
-         * @param iso8601 create an ISO 8601 format output
          */
-        TimeZoneNumberRule(final boolean colon, final boolean iso8601) {
+        TimeZoneNumberRule(final boolean colon) {
             mColon = colon;
-            mISO8601 = iso8601;
         }
 
         /**
@@ -1209,10 +1205,6 @@ public class FastDatePrinter implements DatePrinter, Serializable {
          */
         @Override
         public void appendTo(final StringBuffer buffer, final Calendar calendar) {
-            if (mISO8601 && calendar.getTimeZone().getID().equals("UTC")) {
-                buffer.append("Z");
-                return;
-            }
             
             int offset = calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET);
 
@@ -1292,14 +1284,12 @@ public class FastDatePrinter implements DatePrinter, Serializable {
          */
         @Override
         public void appendTo(final StringBuffer buffer, final Calendar calendar) {
-            int zoneOffset = calendar.get(Calendar.ZONE_OFFSET);
-            if (zoneOffset == 0) {
+            int offset = calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET);
+            if (offset == 0) {
                 buffer.append("Z");
                 return;
             }
             
-            int offset = zoneOffset + calendar.get(Calendar.DST_OFFSET);
-
             if (offset < 0) {
                 buffer.append('-');
                 offset = -offset;

@@ -28,8 +28,6 @@ import org.junit.Test;
 
 /**
  * Unit tests {@link org.apache.commons.lang3.builder.DefaultToStringStyleTest}.
- *
- * @version $Id$
  */
 public class DefaultToStringStyleTest {
 

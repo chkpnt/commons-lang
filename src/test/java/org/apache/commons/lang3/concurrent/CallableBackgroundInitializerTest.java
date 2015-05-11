@@ -27,8 +27,6 @@ import org.junit.Test;
 
 /**
  * Test class for {@code CallableBackgroundInitializer}
- *
- * @version $Id$
  */
 public class CallableBackgroundInitializerTest  {
     /** Constant for the result of the call() invocation. */
