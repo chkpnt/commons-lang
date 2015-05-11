@@ -4110,7 +4110,7 @@ public class StringUtils {
             return null;
         }
         
-        //kommentar
+        //kommentar 1
         if (!iterator.hasNext()) {
             return EMPTY;
         }
@@ -4136,6 +4136,7 @@ public class StringUtils {
                 buf.append(obj);
             }
         }
+        buf.append("foobar");
         return buf.toString();
     }
 
